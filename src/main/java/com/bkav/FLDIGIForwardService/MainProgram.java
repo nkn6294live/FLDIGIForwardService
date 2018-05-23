@@ -18,7 +18,7 @@ import io.socket.client.Socket;
 //{"macaddress":"02:00:00:00:00:00","lat":15.480129811912775,"lng":109.2829299904406};
 
 public class MainProgram {
-	public static void main(String[] args) throws URISyntaxException, UnknownHostException, IOException, JSONException, InterruptedException {
+	public static void test(String[] args) throws URISyntaxException, UnknownHostException, IOException, JSONException, InterruptedException {
 		while (true) {
 			java.net.Socket socketFldigi;
 			try {
