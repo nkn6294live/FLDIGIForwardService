@@ -24,7 +24,41 @@ public class FLDIGIPackage {
 	}
 
 	public static FLDIGIPackage parse(Reader reader) throws Exception {
-		return new FLDIGIPackage().importData(reader);
+		BufferedReader bufferReader = new BufferedReader(reader);
+		List<String> listLine = new ArrayList<>();
+		String line;
+		while ((line = bufferReader.readLine()) != null) {
+			SystemManager.logger.info("Read data:" + line);
+			if (line.startsWith("*")) {
+				break;
+			}
+			listLine.add(line);
+			line = bufferReader.readLine();
+		}
+		String[] lines = listLine.toArray(new String[listLine.size()]);
+		if (lines.length == 0) {
+			return new FLDIGIPackage(null, new String[] {}, lines);
+		}
+		String header = lines[0];
+		int indexDelimeter = header.indexOf('#');
+		header = header.substring(indexDelimeter);
+		String[] headers = header.split(" ");
+		String mac = headers[0];
+		indexDelimeter = mac.indexOf('#');
+		String macaddress = mac.substring(indexDelimeter);
+		String type = headers[1];
+		switch(type) {
+		case SMS_TYPE:
+			return new SMSFLDIGIPackage(macaddress, headers, lines);
+		case CALL_TYPE:
+			return new CallFLDIGIPackage(macaddress, headers, lines);
+		case GPS_TYPE:
+			return new GPSFLDIGIPackage(macaddress, headers, lines);
+		case SOS_TYPE:
+			return new SOSFLDIGIPackage(macaddress, headers, lines);
+			default:
+				return new FLDIGIPackage();
+		}
 	}
 
 	public String macaddress;
@@ -32,16 +66,14 @@ public class FLDIGIPackage {
 	public JSONObject exportObject;
 	public String key;
 
-	public class GPSFLDIGIPackage extends FLDIGIPackage {
+	public static class GPSFLDIGIPackage extends FLDIGIPackage {
 		public double lat;
 		public double lng;
 
-		public GPSFLDIGIPackage() {
-			super();
+		public GPSFLDIGIPackage(String macaddress, String[] headers, String[] lines) {
+			super(macaddress, headers, lines);
 			this.type = GPS_TYPE;
 			this.key = "sentdata";
-			this.lat = Double.valueOf(this.headers[2]);
-			this.lng = Double.valueOf(this.headers[3]);
 		}
 
 		@Override
@@ -51,16 +83,21 @@ public class FLDIGIPackage {
 			this.exportObject.put("lng", new Double(this.lng));
 			return this.exportObject;
 		}
+		
+		@Override
+		protected void updateData() {
+			super.updateData();
+			this.lat = Double.valueOf(this.headers[2]);
+			this.lng = Double.valueOf(this.headers[3]);			
+		}
 	}
 
-	public class CallFLDIGIPackage extends FLDIGIPackage {
+	public static class CallFLDIGIPackage extends FLDIGIPackage {
 		public String number;
 
-		public CallFLDIGIPackage() {
-			super();
+		public CallFLDIGIPackage(String macaddress, String[] headers, String[] lines) {
+			super(macaddress, headers, lines);
 			this.type = CALL_TYPE;
-			this.key = "call";
-			this.number = this.headers[2];
 		}
 
 		@Override
@@ -69,16 +106,21 @@ public class FLDIGIPackage {
 			this.exportObject.put("number", this.number);
 			return this.exportObject;
 		}
+		
+		@Override
+		protected void updateData() {
+			super.updateData();
+			this.key = "call";
+			this.number = this.headers[2];			
+		}
 	}
 
-	public class SOSFLDIGIPackage extends FLDIGIPackage {
+	public static class SOSFLDIGIPackage extends FLDIGIPackage {
 		public String number;
 
-		public SOSFLDIGIPackage() {
-			super();
+		public SOSFLDIGIPackage(String macaddress, String[] headers, String[] lines) {
+			super(macaddress, headers, lines);
 			this.type = SOS_TYPE;
-			this.key = "sos";
-			this.number = Config.SOS_SAMPLE_PHONE_NUMBER;
 		}
 
 		@Override
@@ -92,19 +134,21 @@ public class FLDIGIPackage {
 			this.validatePhoneNumber(number);
 			this.number = number;
 		}
-
+		@Override
+		protected void updateData() {
+			super.updateData();
+			this.key = "sos";
+			this.number = Config.SOS_SAMPLE_PHONE_NUMBER;
+		}
 	}
 
-	public class SMSFLDIGIPackage extends FLDIGIPackage {
+	public static class SMSFLDIGIPackage extends FLDIGIPackage {
 		public String number;
 		public String data;
 
-		public SMSFLDIGIPackage() {
-			super();
+		public SMSFLDIGIPackage(String macaddress, String[] headers, String[] lines) {
+			super(macaddress, headers, lines);
 			this.type = SMS_TYPE;
-			this.key = "sms";
-			this.number = this.headers[2];
-			this.loadData();
 		}
 
 		@Override
@@ -126,10 +170,25 @@ public class FLDIGIPackage {
 			}
 			this.data = builder.toString();
 		}
+		@Override
+		protected void updateData() {
+			super.updateData();
+			this.key = "sms";
+			this.number = this.headers[2];
+			this.loadData();
+		}
 	}
 
-	public FLDIGIPackage() {
+	protected FLDIGIPackage() {
+		this(null, new String[] {}, new String[] {});
+	}
+	
+	protected FLDIGIPackage(String macaddress, String[] headers, String[] lines) {
 		this.exportObject = new JSONObject();
+		this.macaddress = macaddress;
+		this.headers = headers;
+		this.lines = lines;
+		this.updateData();
 	}
 
 	public FLDIGIPackage importData(Reader reader) throws Exception {
@@ -156,7 +215,7 @@ public class FLDIGIPackage {
 		indexDelimeter = mac.indexOf('#');
 		this.macaddress = mac.substring(indexDelimeter);
 		this.type = this.headers[1];
-		
+		this.updateData();
 		return this;
 	}
 
@@ -170,6 +229,9 @@ public class FLDIGIPackage {
 	protected String[] lines;
 	protected String[] headers;
 
+	protected void updateData() {
+	}
+	
 	protected void validatePhoneNumber(String number) {
 		if (number == null) {
 			throw new RuntimeException();
