@@ -1,0 +1,5 @@
+<commands>
+    <command type="1"> <!--sms-->
+        <data number="+84981211231" message=""/>
+    </command>
+</commands>
