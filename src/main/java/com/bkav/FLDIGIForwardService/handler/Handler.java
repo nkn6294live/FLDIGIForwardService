@@ -1,19 +1,20 @@
-package com.bkav.FLDIGIForwardService;
+package com.bkav.FLDIGIForwardService.handler;
 
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 
-import org.json.JSONObject;
-
+import com.bkav.FLDIGIForwardService.Config;
+import com.bkav.FLDIGIForwardService.SystemManager;
+import com.bkav.FLDIGIForwardService.pack.CallFLDIGIPackage;
 import com.bkav.FLDIGIForwardService.pack.FLDIGIPackage;
-import com.bkav.FLDIGIForwardService.pack.FLDIGIPackage.CallFLDIGIPackage;
-import com.bkav.FLDIGIForwardService.pack.FLDIGIPackage.GPSFLDIGIPackage;
-import com.bkav.FLDIGIForwardService.pack.FLDIGIPackage.SMSFLDIGIPackage;
-import com.bkav.FLDIGIForwardService.pack.FLDIGIPackage.SOSFLDIGIPackage;
+import com.bkav.FLDIGIForwardService.pack.GPSFLDIGIPackage;
+import com.bkav.FLDIGIForwardService.pack.SMSFLDIGIPackage;
+import com.bkav.FLDIGIForwardService.pack.SOSFLDIGIPackage;
 
 public class Handler {
 
-	public static void handlerPackage(FLDIGIPackage pack) throws Exception {
+	public static void handlerPackage(FLDIGIPackage pack) throws IOException  {
 		switch (pack.type) {
 		case FLDIGIPackage.CALL_TYPE:
 			CallHandler(pack);
@@ -32,7 +33,7 @@ public class Handler {
 		}
 	}
 
-	public static void SMSHandler(FLDIGIPackage handlerPack) throws Exception {
+	public static void SMSHandler(FLDIGIPackage handlerPack) throws IOException {
 		if (!(handlerPack instanceof SMSFLDIGIPackage)) {
 			return;
 		}
@@ -60,7 +61,7 @@ public class Handler {
 		SystemManager.logger.info("SMS Command");
 	}
 
-	public static void CallHandler(FLDIGIPackage hanlderPack) throws Exception {
+	public static void CallHandler(FLDIGIPackage hanlderPack) throws IOException {
 		if (!(hanlderPack instanceof CallFLDIGIPackage)) {
 			return;
 		}
@@ -89,13 +90,12 @@ public class Handler {
 		SystemManager.logger.info("Call Command");
 	}
 
-	public static void SOSHandler(FLDIGIPackage handlerPack) throws Exception {
+	public static void SOSHandler(FLDIGIPackage handlerPack) throws IOException {
 		if (!(handlerPack instanceof SOSFLDIGIPackage)) {
 			return;
 		}
 		SOSFLDIGIPackage pack = (SOSFLDIGIPackage)handlerPack;
-		JSONObject json = pack.exportObject;
-		if (json.getString("number").equals("end")) {
+		if ("end".equals(pack.number)) {
 			return;
 		}
 		String output = String.format(
@@ -119,7 +119,7 @@ public class Handler {
 		SystemManager.logger.info("SOS Command");
 	}
 
-	public static void GPSHandler(FLDIGIPackage handlerPack) throws Exception {
+	public static void GPSHandler(FLDIGIPackage handlerPack) {
 		if (!(handlerPack instanceof GPSFLDIGIPackage)) {
 			return;
 		}

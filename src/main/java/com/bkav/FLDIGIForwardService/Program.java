@@ -1,15 +1,17 @@
 package com.bkav.FLDIGIForwardService;
 
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.ConnectException;
+import java.net.UnknownHostException;
 
+import com.bkav.FLDIGIForwardService.handler.Handler;
 import com.bkav.FLDIGIForwardService.pack.FLDIGIPackage;
 
 //{"macaddress":"02:00:00:00:00:00","lat":15.480129811912775,"lng":109.2829299904406};
 
 public class Program {
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws UnknownHostException, IOException { //throws Exception {
 		java.net.Socket socketFldigi = null;
 		while (true) {
 			try {
@@ -17,13 +19,18 @@ public class Program {
 				Reader reader = new InputStreamReader(socketFldigi.getInputStream());
 				SystemManager.logger.info("Start....");
 				while (true) {
-					FLDIGIPackage pack = FLDIGIPackage.parse(reader);
-					SystemManager.logger.info("Command:");
-					Handler.handlerPackage(pack);
-					SocketIOService.send(pack);
+					try {
+						FLDIGIPackage pack = FLDIGIPackage.parse(reader);
+						Handler.handlerPackage(pack);
+						SocketIOService.send(pack);						 
+					} catch (IOException ex) {
+					}
 				}
-			} catch (ConnectException ex) {
-				Thread.sleep(1000);
+			} catch (Exception ex) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+				}
 				SystemManager.logger.info("Wait Connect....");
 				continue;
 			} finally {
