@@ -6,8 +6,6 @@ import java.io.Reader;
 import com.bkav.FLDIGIForwardService.handler.HandlerFactory;
 import com.bkav.FLDIGIForwardService.pack.FLDIGIPackage;
 
-//{"macaddress":"02:00:00:00:00:00","lat":15.480129811912775,"lng":109.2829299904406};
-
 public class Program {
 	public static void main(String[] args) {
 		java.net.Socket socketFldigi = null;

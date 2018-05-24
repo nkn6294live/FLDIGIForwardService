@@ -36,7 +36,7 @@ public class SMSFLDIGIPackage extends FLDIGIPackage {
 	@Override
 	public String toString() {
 		return String.format("%s [header=%s, number=%s, data=%s, lines=%s]", 
-				this.getClass().getSimpleName(), this.header, this.number, this.data, Arrays.toString(this.lines));
+				this.getClass().getSimpleName(), this.header.toString(), this.number, this.data, Arrays.toString(this.lines));
 	}
 	@Override
 	protected void updateData() {
@@ -72,14 +72,18 @@ public class SMSFLDIGIPackage extends FLDIGIPackage {
 
 	private final void loadData() {
 		StringBuilder builder = new StringBuilder();
-		String[] headerParams = this.header.getParams();
-		for (int smsIndex = 0; smsIndex < headerParams.length; smsIndex++) {
-			builder.append(" ").append(headerParams[smsIndex]);
-		}
-		for (int index = 0; index < this.lines.length; index++) {
-			String line = this.lines[index];
-			builder.append(" ").append(line);
-		}
-		this.data = builder.toString();
+//		String[] headerParams = this.header.getParams();
+//		for (int smsIndex = 0; smsIndex < headerParams.length; smsIndex++) {
+//			builder.append(" ").append(headerParams[smsIndex]);
+//		}
+		
+//		for (int index = 0; index < this.lines.length; index++) {
+//			String line = this.lines[index];
+//			builder.append(" ").append(line);
+//		}
+		builder.append(String.join(" ", this.header.getParams()));
+		builder.append(" ");
+		builder.append(String.join(" ", this.lines));
+		this.data = builder.toString().trim();
 	}
 }
