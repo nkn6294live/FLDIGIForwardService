@@ -18,9 +18,6 @@ public class HandlerFactory {
 		case FLDIGIPackage.SOS_TYPE:
 			handler = new SOSHandler();
 			break;
-		default:
-			handler = null;
-			break;
 		}
 		if (handler != null) {
 			handler.process(pack);

@@ -1,4 +1,3 @@
-package com.bkav.FLDIGIForwardService;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
