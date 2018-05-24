@@ -1,5 +1,7 @@
 package com.bkav.FLDIGIForwardService.pack;
 
+import java.util.Arrays;
+
 /***
  * Header of <i>FLDIGIPackage</i> contain macaddress, type, and params.
  */
@@ -34,7 +36,6 @@ public class FLDIGIHeader {
 		String macaddress = inputMac.substring(inputMac.indexOf('#'));
 		String type = headers[1];
 		String[] params = new String[headers.length - 2];
-		;
 		for (int index = 2; index < headers.length; index++) {
 			params[index - 2] = headers[index];
 		}
@@ -72,7 +73,13 @@ public class FLDIGIHeader {
 		return this.params[index];
 	}
 	
-	
+	@Override
+	public String toString() {
+		return String.format("%s [macaddress=%s, type=%s, params=%s]", 
+				this.getClass().getSimpleName(), this.macaddress, this.type, 
+				Arrays.toString(this.params));
+	}
+
 	private String macaddress;
 	private String type;
 	private String[] params;

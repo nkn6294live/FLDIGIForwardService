@@ -24,7 +24,11 @@ public class GPSFLDIGIPackage extends FLDIGIPackage {
 		this.exportObject.put("lng", new Double(this.lng));
 		return this.exportObject;
 	}
-
+	@Override
+	public String toString() {
+		return String.format("%s [header=%s, lat=%f, lng=%f]", 
+				this.getClass().getSimpleName(), this.header.toString(), this.lat, this.lng);
+	}
 	@Override
 	protected void updateData() {
 		super.updateData();

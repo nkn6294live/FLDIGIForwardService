@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.json.JSONException;
@@ -32,14 +33,18 @@ public class SMSFLDIGIPackage extends FLDIGIPackage {
 	public String data() {
 		return this.data;
 	}
-
+	@Override
+	public String toString() {
+		return String.format("%s [header=%s, number=%s, data=%s, lines=%s]", 
+				this.getClass().getSimpleName(), this.header, this.number, this.data, Arrays.toString(this.lines));
+	}
 	@Override
 	protected void updateData() {
 		super.updateData();
 		this.number = this.header.getParam(0);
 		this.loadData();
 	}
-
+	
 	@Override
 	protected void loadDataFromReader(Reader reader) throws IOException {
 		super.loadDataFromReader(reader);

@@ -13,12 +13,12 @@ public class CallHandler implements FLDIGIHandler {
 			return;
 		}
 		CallFLDIGIPackage pack = (CallFLDIGIPackage)handlerPack;
-		if ("end".equals(pack.number)) {
+		if ("end".equals(pack.number())) {
 			return;
 		}
 		String output = String.format(
 				"<commands>\n\t<command type=\"1\"> <!--sms-->\n\t<data number=\"%s\" message=\"\"/>\n\t</command>\n" + "</commands>",
-				pack.number);
+				pack.number());
 		HandlerUtils.pushFile(output, "sos.xml", "/storage/emulated/0/SOS/");
 		
 		HandlerUtils.execCommand(

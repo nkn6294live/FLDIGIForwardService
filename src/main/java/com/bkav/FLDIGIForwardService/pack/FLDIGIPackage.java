@@ -100,6 +100,11 @@ public class FLDIGIPackage {
 		return this.header;
 	}
 	
+	@Override
+	public String toString() {
+		return String.format("%s [header=%s]", this.getClass().getSimpleName(), this.header.toString());
+	}
+
 	protected FLDIGIHeader header;
 	protected JSONObject exportObject;
 

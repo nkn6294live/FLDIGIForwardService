@@ -27,6 +27,11 @@ public class SOSFLDIGIPackage extends FLDIGIPackage {
 	}
 
 	@Override
+	public String toString() {
+		return String.format("%s [header=%s, number=%s]", this.getClass().getSimpleName(), this.header.toString(), this.number);
+	}
+	
+	@Override
 	protected void updateData() {
 		super.updateData();
 		this.number = Config.SOS_SAMPLE_PHONE_NUMBER;
