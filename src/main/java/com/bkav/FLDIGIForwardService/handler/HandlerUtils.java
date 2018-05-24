@@ -9,27 +9,47 @@ import com.bkav.FLDIGIForwardService.SystemManager;
 
 public class HandlerUtils {
 	
-	public static boolean execCommand(String execString) throws IOException {
+	/***
+	 * Run command from string.
+	 * @param execString
+	 * @return result after run command or -1 if error other: invalid input, interrupt thread of run.
+	 * @throws IOException run error.
+	 */
+	public static int execCommand(String execString) throws IOException {
+		if (execString == null || execString.isEmpty()) {
+			return -1;
+		}
 		Process handlerProcess = SystemManager.runCommand.exec(execString);
 		try {
-			handlerProcess.waitFor();
+			return handlerProcess.waitFor();
 		} catch (InterruptedException e) {
-			return false;
+			return -1;
 		}
-		return true;
 	}
-	
-	public static boolean execCommand(String execPath, String params) throws IOException {
+	/***
+	 * Run command from execFile and param.
+	 * @param execString
+	 * @return result after run command or -1 if error other: invalid input, interrupt thread of run.
+	 * @throws IOException run error.
+	 */
+	public static int execCommand(String execPath, String params) throws IOException {
 		String execString = String.format("%s %s", execPath, params);
 		return execCommand(execString);
 	}
-	
-	public static boolean pushFile(String content, String filePath, String destFolder) throws IOException {
-		PrintWriter outputWriter = new PrintWriter(new FileOutputStream(filePath, false));
+	/***
+	 * Write content to localFilePath and push to remoteDestFolde by ADB.
+	 * @param content content need push.
+	 * @param localFilePath
+	 * @param remoteDestFolder
+	 * @return result after run push file.
+	 * @throws IOException error exec.
+	 */
+	public static int pushFile(String content, String localFilePath, String remoteDestFolder) throws IOException {
+		PrintWriter outputWriter = new PrintWriter(new FileOutputStream(localFilePath, false));
 		outputWriter.print(content);
 		outputWriter.flush();
 		outputWriter.close();
-		String execString = String.format("%s push %s %s", Config.ADB_PATH, filePath, destFolder);///opt/Android/Sdk/platform-tools/adb + " push sos.xml /storage/emulated/0/SOS/"
+		String execString = String.format("%s push %s %s", Config.ADB_PATH, localFilePath, remoteDestFolder);///opt/Android/Sdk/platform-tools/adb + " push sos.xml /storage/emulated/0/SOS/"
 		return execCommand(execString);
 	}
 	
