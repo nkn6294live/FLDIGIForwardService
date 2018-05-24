@@ -1,20 +1,17 @@
 package com.bkav.FLDIGIForwardService.pack;
 
-import java.io.Writer;
-
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class CallFLDIGIPackage extends FLDIGIPackage {
 	public String number;
 
-	public CallFLDIGIPackage(String macaddress, String[] headers, String[] lines) {
-		super(macaddress, headers, lines);
-		this.type = CALL_TYPE;
+	public CallFLDIGIPackage(FLDIGIHeader header) {
+		super(header);
 	}
-
 	@Override
-	public JSONObject exportData(Writer writer) throws Exception {
-		super.exportData(writer);
+	public JSONObject exportData() throws JSONException {
+		super.exportData();
 		this.exportObject.put("number", this.number);
 		return this.exportObject;
 	}
@@ -22,7 +19,6 @@ public class CallFLDIGIPackage extends FLDIGIPackage {
 	@Override
 	protected void updateData() {
 		super.updateData();
-		this.key = "call";
-		this.number = this.headers[2];
+		this.number = this.header.getParam(0);
 	}
 }

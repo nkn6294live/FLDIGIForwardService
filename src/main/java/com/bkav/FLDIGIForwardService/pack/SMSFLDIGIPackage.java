@@ -1,43 +1,80 @@
 package com.bkav.FLDIGIForwardService.pack;
 
-import java.io.Writer;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
-public class SMSFLDIGIPackage extends FLDIGIPackage {
-	public String number;
-	public String data;
+import com.bkav.FLDIGIForwardService.SystemManager;
 
-	public SMSFLDIGIPackage(String macaddress, String[] headers, String[] lines) {
-		super(macaddress, headers, lines);
-		this.type = SMS_TYPE;
+public class SMSFLDIGIPackage extends FLDIGIPackage {
+
+	public SMSFLDIGIPackage(FLDIGIHeader header, Reader reader) throws IOException {
+		super(header, reader);
 	}
 
 	@Override
-	public JSONObject exportData(Writer writer) throws Exception {
-		super.exportData(writer);
+	public JSONObject exportData() throws JSONException {
+		super.exportData();
 		this.exportObject.put("number", this.number);
 		this.exportObject.put("data", this.data);
 		return this.exportObject;
 	}
 
-	protected final void loadData() {
-		StringBuilder builder = new StringBuilder();
-		for (int smsIndex = 3; smsIndex < this.headers.length; smsIndex++) {
-			builder.append(" ").append(this.headers[smsIndex]);
-		}
-		for (int index = 1; index < this.lines.length; index++) {
-			String line = this.lines[index];// line.split(" ");
-			builder.append(" ").append(line);
-		}
-		this.data = builder.toString();
+	public String number() {
+		return this.number;
+	}
+
+	public String data() {
+		return this.data;
 	}
 
 	@Override
 	protected void updateData() {
 		super.updateData();
-		this.key = "sms";
-		this.number = this.headers[2];
+		this.number = this.header.getParam(0);
 		this.loadData();
+	}
+
+	@Override
+	protected void loadDataFromReader(Reader reader) throws IOException {
+		super.loadDataFromReader(reader);
+		BufferedReader bufferReader;
+		if (reader instanceof BufferedReader) {
+			bufferReader = (BufferedReader) reader;
+		} else {
+			bufferReader = new BufferedReader(reader);
+		}
+		List<String> listLine = new ArrayList<>();
+		String line;
+		while ((line = bufferReader.readLine()) != null) {
+			SystemManager.logger.info("Read data:" + line);
+			if (line.startsWith("*")) {
+				break;
+			}
+			listLine.add(line);
+		}
+		this.lines = listLine.toArray(new String[listLine.size()]);
+	}
+
+	private String number;
+	private String data;
+	private String[] lines;
+
+	private final void loadData() {
+		StringBuilder builder = new StringBuilder();
+		String[] headerParams = this.header.getParams();
+		for (int smsIndex = 0; smsIndex < headerParams.length; smsIndex++) {
+			builder.append(" ").append(headerParams[smsIndex]);
+		}
+		for (int index = 0; index < this.lines.length; index++) {
+			String line = this.lines[index];
+			builder.append(" ").append(line);
+		}
+		this.data = builder.toString();
 	}
 }
