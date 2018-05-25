@@ -43,7 +43,7 @@ public class SocketIOService {
 			SystemManager.logger.info("Connect to Socket.IO service:" + json.toString());
 		}
 		socket.emit(key, json);
-		SystemManager.logger.info("Send to Socket.IO service:" + json);
+		SystemManager.logger.info("Send to Socket.IO service:" + json.toString());
 	}
 
 	public static void testSend() throws JSONException {

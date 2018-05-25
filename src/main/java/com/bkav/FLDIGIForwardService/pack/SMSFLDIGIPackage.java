@@ -58,10 +58,10 @@ public class SMSFLDIGIPackage extends FLDIGIPackage {
 		String line;
 		while ((line = bufferReader.readLine()) != null) {
 			SystemManager.logger.info("Read data:" + line);
+			listLine.add(line);
 			if (line.startsWith("*")) {
 				break;
 			}
-			listLine.add(line);
 		}
 		this.lines = listLine.toArray(new String[listLine.size()]);
 	}
@@ -82,7 +82,9 @@ public class SMSFLDIGIPackage extends FLDIGIPackage {
 //			builder.append(" ").append(line);
 //		}
 		builder.append(String.join(" ", this.header.getParams()));
-		builder.append(" ");
+		if (this.getHeader().getParams().length > 0) {
+			builder.append(" ");			
+		}
 		builder.append(String.join(" ", this.lines));
 		this.data = builder.toString().trim();
 	}
