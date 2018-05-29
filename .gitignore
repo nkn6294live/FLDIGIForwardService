@@ -24,3 +24,9 @@ hs_err_pid*
 
 #MAVEN FOLDER
 target
+
+#ECLISE FOLDER
+.settings
+
+#DATA
+sos.xml
