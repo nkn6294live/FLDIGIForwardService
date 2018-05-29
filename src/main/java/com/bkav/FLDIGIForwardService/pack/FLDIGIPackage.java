@@ -9,6 +9,8 @@ import java.security.InvalidParameterException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.bkav.FLDIGIForwardService.SystemManager;
+
 public class FLDIGIPackage {
 
 	public final static String SMS_TYPE = "sms";
@@ -32,14 +34,18 @@ public class FLDIGIPackage {
 		} else {
 			bufferReader = new BufferedReader(reader);
 		}
+		SystemManager.logger.info("READING HEADER...");
 		String header = bufferReader.readLine();
+		SystemManager.logger.info("HEADER:" + header);
 		if (header == null) {
 			throw new IOException();
 		}
 		FLDIGIHeader fldigiHeader = FLDIGIHeader.parser(header);
 		if (fldigiHeader == null) {
+			SystemManager.logger.info("HEADER_PARSED: NULL");
 			return null;
 		}
+		SystemManager.logger.info("HEADER_PARSED: " + fldigiHeader.toString());
 		switch (fldigiHeader.getType()) {
 			case SMS_TYPE:
 				return new SMSFLDIGIPackage(fldigiHeader, bufferReader);
@@ -90,7 +96,7 @@ public class FLDIGIPackage {
 	public JSONObject exportData() throws JSONException {
 		this.exportObject = new JSONObject();
 		this.exportObject.put("macaddress", this.header.getMacAddress());
-		this.exportObject.put("type", this.header.getMacAddress());
+		this.exportObject.put("type", this.header.getType());
 		return this.exportObject;
 	}
 	/***

@@ -17,9 +17,13 @@ public class Program {
 				while (true) {
 					try {
 						FLDIGIPackage pack = FLDIGIPackage.createPackage(reader);
+						if (pack != null) {
+							SystemManager.logger.info("PACKAGE_PARSED:" + pack.exportData());
+						}
 						HandlerFactory.handlerPackage(pack);
 						SocketIOService.send(pack);						 
 					} catch (Exception ex) {
+						SystemManager.logger.info(ex.getMessage());
 						try {
 							Thread.sleep(100);							
 						} catch (InterruptedException e) {}
@@ -30,6 +34,7 @@ public class Program {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 				}
+				SystemManager.logger.info(ex.getMessage());
 				SystemManager.logger.info("Wait Connect....");
 				continue;
 			} finally {

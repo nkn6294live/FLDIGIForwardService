@@ -1,12 +1,17 @@
 package com.bkav.FLDIGIForwardService.pack;
 
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 /***
  * Header of <i>FLDIGIPackage</i> contain macaddress, type, and params.
  */
 public class FLDIGIHeader {
 
+	public final static String regexStringPatter = "(.*)(#\\w{3})\\s(\\S+)\\s(.*)";
+	public static Pattern headerPatter = Pattern.compile(regexStringPatter);
 	/***
 	 * Parse FLDIGIHeader from string
 	 * @return FLDIGIHeader parsed of null if input invalid format.
@@ -16,9 +21,17 @@ public class FLDIGIHeader {
 			return null;
 		}
 		try {
-			String header = inputHeader.substring(inputHeader.indexOf('#'));
-			String[] headers = header.split(" ");
-			return parser(headers);
+			Matcher match = headerPatter.matcher(inputHeader);
+			if (!match.find()) {
+				return null;
+			}
+			if (match.groupCount() < 4) {
+				return null;
+			}
+			String macaddress = match.group(2);
+			String type = match.group(3);
+			String[] params = match.group(4).split("\\s");
+			return new FLDIGIHeader(macaddress, type, params);
 		} catch (Exception ex) {
 			return null;
 		}

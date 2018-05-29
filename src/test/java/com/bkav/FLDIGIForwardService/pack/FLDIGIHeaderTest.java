@@ -34,6 +34,13 @@ public class FLDIGIHeaderTest extends TestCase {
 		assertEquals("param_0", header.getParam(0));
 		assertEquals("param_1", header.getParam(1));
 		assertEquals("param_2", header.getParam(2));
+		
+		inputs = "& e                &          yiÁn\\\"  n  gou ¸z )   ÷****#200 call 0123456789 line1 line2 line3";
+		header = FLDIGIHeader.parser(inputs);
+		assertNotNull(header);
+		assertEquals("200", header.getMacAddress());
+		assertEquals("call", header.getType());
+		assertEquals(4, header.getParams().length);
 		assertTrue(true);
 	}
 
